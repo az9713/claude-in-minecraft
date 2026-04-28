@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Minecraft Claude Code Headless Agent Anatomy</title>
+  <desc id="desc">Infographic showing how Minecraft chat flows through Mineflayer, a queue file, Claude Code headless mode, MCP, and back to the Minecraft world as bot actions.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f6f7f2; }
+      .title { font: 700 46px Arial, Helvetica, sans-serif; fill: #162016; }
+      .subtitle { font: 400 22px Arial, Helvetica, sans-serif; fill: #4a554a; }
+      .label { font: 700 24px Arial, Helvetica, sans-serif; fill: #162016; }
+      .small { font: 400 18px Arial, Helvetica, sans-serif; fill: #303830; }
+      .tiny { font: 400 15px Arial, Helvetica, sans-serif; fill: #3b443b; }
+      .code { font: 700 16px Consolas, Menlo, monospace; fill: #1e2a1e; }
+      .box { stroke: #243324; stroke-width: 3; rx: 18; ry: 18; }
+      .world { fill: #cfe8b8; }
+      .bot { fill: #b7d7f0; }
+      .queue { fill: #f4e1a5; }
+      .claude { fill: #e8c6b8; }
+      .mcp { fill: #d5c8ef; }
+      .tools { fill: #bee2d7; }
+      .dash { fill: #ead4ef; }
+      .note { fill: #ffffff; stroke: #6d756d; stroke-width: 2; rx: 12; ry: 12; }
+      .arrow { stroke: #263326; stroke-width: 5; fill: none; marker-end: url(#arrowhead); }
+      .dasharrow { stroke: #6d4c7d; stroke-width: 4; fill: none; stroke-dasharray: 10 8; marker-end: url(#arrowhead-purple); }
+      .backarrow { stroke: #1d5b47; stroke-width: 5; fill: none; marker-end: url(#arrowhead-green); }
+      .step { fill: #162016; }
+      .stepText { font: 700 18px Arial, Helvetica, sans-serif; fill: #ffffff; }
+    </style>
+    <marker id="arrowhead" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
+      <path d="M0,0 L12,4 L0,8 Z" fill="#263326"/>
+    </marker>
+    <marker id="arrowhead-green" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
+      <path d="M0,0 L12,4 L0,8 Z" fill="#1d5b47"/>
+    </marker>
+    <marker id="arrowhead-purple" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
+      <path d="M0,0 L12,4 L0,8 Z" fill="#6d4c7d"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="1000"/>
+
+  <text class="title" x="70" y="75">How Claude Code "Gets Into" Minecraft</text>
+  <text class="subtitle" x="72" y="112">Claude controls a real Mineflayer player through local MCP tools; Minecraft never embeds the model.</text>
+
+  <rect class="box world" x="70" y="175" width="300" height="190"/>
+  <text class="label" x="95" y="220">1. Minecraft World</text>
+  <text class="small" x="95" y="255">Paper server</text>
+  <text class="code" x="95" y="285">127.0.0.1:25565</text>
+  <text class="tiny" x="95" y="318">server/start.ps1</text>
+  <text class="tiny" x="95" y="342">server.properties</text>
+
+  <rect class="box bot" x="460" y="175" width="320" height="190"/>
+  <text class="label" x="485" y="220">2. Mineflayer Body</text>
+  <text class="small" x="485" y="255">Node client logs in as</text>
+  <text class="code" x="485" y="285">ClaudeBot</text>
+  <text class="tiny" x="485" y="318">bot/index.js</text>
+  <text class="tiny" x="485" y="342">auth: offline, version 1.21.11</text>
+
+  <rect class="box queue" x="870" y="175" width="280" height="190"/>
+  <text class="label" x="895" y="220">3. Chat Queue</text>
+  <text class="small" x="895" y="255">Messages containing</text>
+  <text class="code" x="895" y="285">@claude or @team</text>
+  <text class="tiny" x="895" y="318">bot/chat-queue.txt</text>
+  <text class="tiny" x="895" y="342">plain file handoff</text>
+
+  <rect class="box claude" x="1240" y="175" width="290" height="190"/>
+  <text class="label" x="1265" y="220">4. Claude Runner</text>
+  <text class="small" x="1265" y="255">Polls queue, invokes</text>
+  <text class="code" x="1265" y="285">claude -p</text>
+  <text class="tiny" x="1265" y="318">agent/run.ps1 or run.sh</text>
+  <text class="tiny" x="1265" y="342">max-turns 8</text>
+
+  <rect class="box mcp" x="870" y="555" width="320" height="210"/>
+  <text class="label" x="895" y="600">5. MCP Bridge</text>
+  <text class="small" x="895" y="635">Streamable HTTP server</text>
+  <text class="code" x="895" y="665">127.0.0.1:8888/mcp</text>
+  <text class="tiny" x="895" y="700">bot/mcp-server.js</text>
+  <text class="tiny" x="895" y="724">shares live state.bot</text>
+
+  <rect class="box tools" x="460" y="555" width="320" height="210"/>
+  <text class="label" x="485" y="600">6. Tool Handlers</text>
+  <text class="small" x="485" y="635">Typed actions over the bot</text>
+  <text class="tiny" x="485" y="670">get_status, send_chat</text>
+  <text class="tiny" x="485" y="695">navigate_to, follow_player</text>
+  <text class="tiny" x="485" y="720">mine_block, get_inventory</text>
+  <text class="tiny" x="485" y="745">collect_nearby_items</text>
+
+  <rect class="box dash" x="70" y="555" width="300" height="210"/>
+  <text class="label" x="95" y="600">Optional Dashboard</text>
+  <text class="small" x="95" y="635">Browser control panel</text>
+  <text class="code" x="95" y="665">127.0.0.1:8889</text>
+  <text class="tiny" x="95" y="700">bot/dashboard.js</text>
+  <text class="tiny" x="95" y="724">writes directly to queue</text>
+
+  <path class="arrow" d="M370 270 C405 270, 425 270, 460 270"/>
+  <path class="arrow" d="M780 270 C815 270, 835 270, 870 270"/>
+  <path class="arrow" d="M1150 270 C1185 270, 1205 270, 1240 270"/>
+  <path class="arrow" d="M1385 365 C1385 450, 1190 500, 1080 555"/>
+  <path class="backarrow" d="M870 660 C835 660, 815 660, 780 660"/>
+  <path class="backarrow" d="M620 555 C620 480, 620 440, 620 365"/>
+  <path class="backarrow" d="M460 660 C350 650, 270 520, 220 365"/>
+  <path class="dasharrow" d="M370 660 C540 520, 735 420, 925 365"/>
+
+  <circle class="step" cx="397" cy="270" r="18"/><text class="stepText" x="392" y="277">A</text>
+  <circle class="step" cx="820" cy="270" r="18"/><text class="stepText" x="815" y="277">B</text>
+  <circle class="step" cx="1195" cy="270" r="18"/><text class="stepText" x="1190" y="277">C</text>
+  <circle class="step" cx="1295" cy="465" r="18"/><text class="stepText" x="1290" y="472">D</text>
+  <circle class="step" cx="825" cy="660" r="18"/><text class="stepText" x="820" y="667">E</text>
+  <circle class="step" cx="620" cy="455" r="18"/><text class="stepText" x="615" y="462">F</text>
+  <circle class="step" cx="330" cy="540" r="18"/><text class="stepText" x="325" y="547">G</text>
+
+  <rect class="note" x="70" y="830" width="1460" height="105"/>
+  <text class="label" x="95" y="872">Key idea</text>
+  <text class="small" x="230" y="872">Claude is outside the game. Mineflayer is the body. MCP is the control surface. The queue is the trigger.</text>
+  <text class="tiny" x="95" y="908">Inbound: Minecraft chat -> bot listener -> chat-queue.txt -> claude -p. Outbound: Claude MCP tool call -> Node handler -> Mineflayer API -> Minecraft packets -> visible bot action.</text>
+
+  <text class="tiny" x="72" y="970">Accurate to files: bot/index.js, bot/mcp-server.js, bot/tools/*.js, agent/run.ps1, agent/mcp-config.json, agent/prompt.md, server/server.properties.</text>
+</svg>

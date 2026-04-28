@@ -1,0 +1,31 @@
+# Dependencies
+bot/node_modules/
+
+# Runtime files
+bot/chat-queue.txt
+bot/bot.log
+agent/agent.log
+agent/agent-runner.log
+agent/claude-busy.lock
+
+# Minecraft server runtime
+server/world/
+server/world_nether/
+server/world_the_end/
+server/logs/
+server/cache/
+server/libraries/
+server/versions/
+server/paper-*.jar
+server/usercache.json
+server/banned-ips.json
+server/banned-players.json
+server/version_history.json
+server/session.lock
+
+# Sensitive / large files
+.ignore/
+
+# OS
+.DS_Store
+Thumbs.db

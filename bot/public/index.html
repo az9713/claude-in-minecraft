@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClaudeBot Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0f1117;
+    color: #e2e8f0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: #1a1d2e;
+    border-bottom: 1px solid #2d3748;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  header h1 { font-size: 1.2rem; font-weight: 600; color: #a78bfa; }
+
+  #status-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #4a5568;
+    transition: background 0.3s;
+    flex-shrink: 0;
+  }
+  #status-dot.online { background: #48bb78; box-shadow: 0 0 6px #48bb78; }
+  #status-dot.offline { background: #fc8181; }
+
+  #status-label { font-size: 0.8rem; color: #718096; }
+
+  main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 0;
+  }
+
+  /* LEFT PANEL */
+  .panel-left {
+    background: #141722;
+    border-right: 1px solid #2d3748;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .card {
+    background: #1a1d2e;
+    border: 1px solid #2d3748;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .card h2 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #718096;
+    margin-bottom: 12px;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .stat-label { font-size: 0.85rem; color: #a0aec0; }
+  .stat-value { font-size: 0.95rem; font-weight: 600; color: #e2e8f0; font-variant-numeric: tabular-nums; }
+
+  .bar-wrap { margin-bottom: 10px; }
+  .bar-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: #a0aec0; margin-bottom: 4px; }
+  .bar { height: 8px; background: #2d3748; border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+  .bar-fill.health { background: linear-gradient(90deg, #fc8181, #f56565); }
+  .bar-fill.food   { background: linear-gradient(90deg, #f6ad55, #ed8936); }
+
+  .task-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: #2d3748;
+    color: #a0aec0;
+    text-transform: capitalize;
+  }
+  .task-badge.navigate { background: #2b4c7e; color: #90cdf4; }
+  .task-badge.mine     { background: #3d2b1f; color: #f6ad55; }
+  .task-badge.follow   { background: #1f3d2b; color: #68d391; }
+  .task-badge.collect  { background: #3d2b3d; color: #d6bcfa; }
+
+  .players-list { display: flex; flex-direction: column; gap: 6px; }
+  .player-chip {
+    background: #2d3748;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .player-chip::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #48bb78;
+    flex-shrink: 0;
+  }
+  .no-players { color: #4a5568; font-size: 0.85rem; font-style: italic; }
+
+  /* RIGHT PANEL */
+  .panel-right {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chat-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .chat-msg {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-width: 85%;
+  }
+
+  .chat-msg.you { align-self: flex-end; align-items: flex-end; }
+  .chat-msg.bot { align-self: flex-start; }
+  .chat-msg.player { align-self: flex-start; }
+
+  .chat-sender { font-size: 0.7rem; color: #718096; padding: 0 6px; }
+
+  .chat-bubble {
+    padding: 8px 14px;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+
+  .chat-msg.you .chat-bubble    { background: #5a3ea1; color: #e9d8fd; border-radius: 14px 14px 4px 14px; }
+  .chat-msg.bot .chat-bubble    { background: #1a2f4a; color: #90cdf4; border-radius: 14px 14px 14px 4px; }
+  .chat-msg.player .chat-bubble { background: #1a2e2a; color: #9ae6b4; border-radius: 14px 14px 14px 4px; }
+
+  .chat-time { font-size: 0.65rem; color: #4a5568; padding: 0 6px; }
+
+  .chat-input-area {
+    border-top: 1px solid #2d3748;
+    padding: 16px 20px;
+    background: #141722;
+    display: flex;
+    gap: 10px;
+  }
+
+  .chat-input-area input {
+    flex: 1;
+    background: #1a1d2e;
+    border: 1px solid #2d3748;
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .chat-input-area input:focus { border-color: #7c3aed; }
+  .chat-input-area input::placeholder { color: #4a5568; }
+
+  .chat-input-area button {
+    background: #7c3aed;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .chat-input-area button:hover { background: #6d28d9; }
+  .chat-input-area button:disabled { background: #4a5568; cursor: not-allowed; }
+
+  .hint { font-size: 0.75rem; color: #4a5568; padding: 4px 0 0; }
+
+  .empty-chat {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4a5568;
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0f1117; }
+  ::-webkit-scrollbar-thumb { background: #2d3748; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div id="status-dot" class="offline"></div>
+  <h1>ClaudeBot Dashboard</h1>
+  <span id="status-label">Connecting...</span>
+</header>
+
+<main>
+  <!-- LEFT: stats -->
+  <div class="panel-left">
+
+    <div class="card">
+      <h2>Position</h2>
+      <div class="stat-row">
+        <span class="stat-label">X</span><span class="stat-value" id="pos-x">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Y</span><span class="stat-value" id="pos-y">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Z</span><span class="stat-value" id="pos-z">—</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Vitals</h2>
+      <div class="bar-wrap">
+        <div class="bar-label"><span>Health</span><span id="health-val">—</span></div>
+        <div class="bar"><div class="bar-fill health" id="health-bar" style="width:0%"></div></div>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-label"><span>Food</span><span id="food-val">—</span></div>
+        <div class="bar"><div class="bar-fill food" id="food-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Current Task</h2>
+      <span class="task-badge idle" id="task-badge">idle</span>
+    </div>
+
+    <div class="card">
+      <h2>Players Online</h2>
+      <div class="players-list" id="players-list">
+        <span class="no-players">No other players</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: chat -->
+  <div class="panel-right">
+    <div class="chat-log" id="chat-log">
+      <div class="empty-chat" id="empty-msg">No messages yet — type a command below</div>
+    </div>
+
+    <div class="chat-input-area">
+      <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+        <input
+          type="text"
+          id="cmd-input"
+          placeholder="@claude come to 0 64 0"
+          autocomplete="off"
+        />
+        <span class="hint">Use @claude or @team — same as in-game chat</span>
+      </div>
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+</main>
+
+<script>
+  const dot    = document.getElementById('status-dot');
+  const label  = document.getElementById('status-label');
+  const log    = document.getElementById('chat-log');
+  const emptyMsg = document.getElementById('empty-msg');
+  const input  = document.getElementById('cmd-input');
+  const sendBtn = document.getElementById('send-btn');
+
+  function fmt(ts) {
+    return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+
+  function addMessage(from, message, ts) {
+    if (emptyMsg) emptyMsg.remove();
+
+    const kind = from === 'You' ? 'you' : from === 'ClaudeBot' ? 'bot' : 'player';
+    const div = document.createElement('div');
+    div.className = `chat-msg ${kind}`;
+    div.innerHTML = `
+      <span class="chat-sender">${from}</span>
+      <div class="chat-bubble">${escHtml(message)}</div>
+      <span class="chat-time">${fmt(ts)}</span>
+    `;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function applyStatus(d) {
+    if (!d.connected) {
+      dot.className = 'offline';
+      label.textContent = 'Bot offline';
+      return;
+    }
+    dot.className = 'online';
+    label.textContent = 'ClaudeBot connected';
+
+    document.getElementById('pos-x').textContent = d.pos?.x ?? '—';
+    document.getElementById('pos-y').textContent = d.pos?.y ?? '—';
+    document.getElementById('pos-z').textContent = d.pos?.z ?? '—';
+
+    const hp = Math.round((d.health / 20) * 100);
+    document.getElementById('health-val').textContent = `${Math.round(d.health)}/20`;
+    document.getElementById('health-bar').style.width = hp + '%';
+
+    const fp = Math.round((d.food / 20) * 100);
+    document.getElementById('food-val').textContent = `${Math.round(d.food)}/20`;
+    document.getElementById('food-bar').style.width = fp + '%';
+
+    const badge = document.getElementById('task-badge');
+    badge.textContent = d.task || 'idle';
+    badge.className = `task-badge ${d.task || 'idle'}`;
+
+    const pl = document.getElementById('players-list');
+    if (!d.players?.length) {
+      pl.innerHTML = '<span class="no-players">No other players</span>';
+    } else {
+      pl.innerHTML = d.players.map(p =>
+        `<div class="player-chip">${escHtml(p)}</div>`
+      ).join('');
+    }
+  }
+
+  // SSE connection
+  function connect() {
+    const es = new EventSource('/api/events');
+
+    es.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === 'status') applyStatus(data);
+      if (data.type === 'chat')   addMessage(data.from, data.message, data.ts);
+    };
+
+    es.onerror = () => {
+      dot.className = 'offline';
+      label.textContent = 'Reconnecting...';
+      es.close();
+      setTimeout(connect, 3000);
+    };
+  }
+
+  connect();
+
+  // Send command
+  async function sendCommand() {
+    const msg = input.value.trim();
+    if (!msg) return;
+    sendBtn.disabled = true;
+    input.value = '';
+    try {
+      await fetch('/api/command', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg }),
+      });
+    } catch(e) {
+      addMessage('System', 'Failed to send — is the bot running?', Date.now());
+    }
+    sendBtn.disabled = false;
+    input.focus();
+  }
+
+  sendBtn.addEventListener('click', sendCommand);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') sendCommand(); });
+</script>
+</body>
+</html>
