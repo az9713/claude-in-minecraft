@@ -8,7 +8,7 @@
 
 ## Demo
 
-[![Demo video](https://PLACEHOLDER_DEMO_VIDEO_THUMBNAIL_URL)](https://PLACEHOLDER_DEMO_VIDEO_URL)
+https://github.com/user-attachments/assets/4bdf2392-3f46-4f2d-b505-e906538e2a49
 
 > *ClaudeBot receiving chat commands, pathfinding across the world, and replying in real time.*
 
