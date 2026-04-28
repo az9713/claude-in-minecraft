@@ -37,7 +37,7 @@ So the world contains `ClaudeBot`, not Claude itself. Claude "enters" by receivi
 
 ```mermaid
 flowchart LR
-    Human["Human player in Minecraft<br/>az9713 or dashboard user"]
+    Human["Human player in Minecraft<br/>YourUsername or dashboard user"]
     Paper["Paper server<br/>127.0.0.1:25565<br/>world, entities, chat"]
     Bot["Node Mineflayer client<br/>ClaudeBot<br/>bot/index.js"]
     Queue["chat-queue.txt<br/>file handoff"]
@@ -310,7 +310,7 @@ the intended chain is:
 2. Claude reads `agent/prompt.md`.
 3. Claude calls `get_status`.
 4. Claude decides the requested behavior is follow.
-5. Claude calls `follow_player({ playerName: "az9713", range: 3 })`.
+5. Claude calls `follow_player({ playerName: "YourUsername", range: 3 })`.
 6. `bot/tools/navigation.js` sets `state.activeTask = { kind: 'follow', ... }`.
 7. The tool calls `bot.pathfinder.setGoal(new GoalFollow(...), true)`.
 8. Mineflayer sends movement packets to the Paper server.
@@ -377,7 +377,7 @@ bot.chat(message);
 That sends a normal Minecraft chat packet from `ClaudeBot`. Server logs then show messages such as:
 
 ```text
-<ClaudeBot> Following you az9713!
+<ClaudeBot> Following you YourUsername!
 ```
 
 This is not the Claude CLI printing to the terminal. It is the MCP `send_chat` tool making the Mineflayer client speak in-game.
@@ -401,7 +401,7 @@ The current logs show the system working end to end:
 - `server/logs/latest.log` shows the Paper server starting on `127.0.0.1:25565`.
 - The same log shows `ClaudeBot joined the game`.
 - `bot/bot.log` shows the bot spawning and creating MCP sessions for Claude turns.
-- `agent/agent.log` shows queued inputs such as `az9713: @claude follow me` and headless Claude outputs.
+- `agent/agent.log` shows queued inputs such as `YourUsername: @claude follow me` and headless Claude outputs.
 - Server chat logs show `ClaudeBot` replying in Minecraft chat after Claude tool calls.
 
 One important observation: repeated commands can create repeated Claude invocations and repeated MCP sessions. The logs show several duplicated `@claude follow me` inputs around `16:51:36`, resulting in multiple "Following you" replies. The file queue plus lock prevents simultaneous runner work, but it does not deduplicate human spam or dashboard repeats.

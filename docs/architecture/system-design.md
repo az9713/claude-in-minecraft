@@ -66,19 +66,19 @@ Human types "@claude follow me" in Minecraft
   → Paper server broadcasts to all clients
   → Mineflayer bot receives chat packet
   → chat listener: contains "@claude" → true
-  → appendFileSync("chat-queue.txt", "az9713: @claude follow me\n")
+  → appendFileSync("chat-queue.txt", "YourUsername: @claude follow me\n")
   → agent runner polls, reads file, clears it, creates lockfile
-  → spawns: claude -p --mcp-config ... "az9713: @claude follow me"
+  → spawns: claude -p --mcp-config ... "YourUsername: @claude follow me"
   → Claude connects to MCP, calls get_status()
   → MCP returns: { pos, health, food, activeTask: "idle" }
-  → Claude calls follow_player({ playerName: "az9713", range: 3 })
-  → MCP handler: state.activeTask = { kind: "follow", playerName: "az9713", range: 3 }
-  → MCP returns: "Following az9713"
-  → Claude calls send_chat({ message: "Following az9713" })
-  → bot.chat("Following az9713") → Paper server → all clients see it
+  → Claude calls follow_player({ playerName: "YourUsername", range: 3 })
+  → MCP handler: state.activeTask = { kind: "follow", playerName: "YourUsername", range: 3 }
+  → MCP returns: "Following YourUsername"
+  → Claude calls send_chat({ message: "Following YourUsername" })
+  → bot.chat("Following YourUsername") → Paper server → all clients see it
   → Claude exits
   → agent runner deletes lockfile
-  → tick loop continues: every 500ms, GoalFollow(az9713entity, 3) updated
+  → tick loop continues: every 500ms, GoalFollow(YourUsernameentity, 3) updated
 ```
 
 ### Command flow (dashboard)

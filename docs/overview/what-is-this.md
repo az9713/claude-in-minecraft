@@ -51,14 +51,14 @@ ClaudeBot physically moves/mines/speaks in the game world
 A typical command cycle takes 15–20 seconds end-to-end:
 
 1. You type `@claude follow me` in Minecraft chat (or the dashboard)
-2. The Mineflayer bot's chat listener appends `az9713: @claude follow me` to `chat-queue.txt`
+2. The Mineflayer bot's chat listener appends `YourUsername: @claude follow me` to `chat-queue.txt`
 3. The bash agent runner polls the file every 500ms, detects content, acquires a lockfile
-4. The runner invokes `claude -p --mcp-config agent/mcp-config.json "az9713: @claude follow me"`
+4. The runner invokes `claude -p --mcp-config agent/mcp-config.json "YourUsername: @claude follow me"`
 5. Claude connects to the MCP server at `http://127.0.0.1:8888/mcp`, lists 11 available tools
 6. Claude calls `get_status` to read ClaudeBot's position, then calls `follow_player`
-7. The MCP server's `follow_player` handler sets `state.activeTask = { kind: 'follow', playerName: 'az9713' }`
+7. The MCP server's `follow_player` handler sets `state.activeTask = { kind: 'follow', playerName: 'YourUsername' }`
 8. The 500ms tick loop detects `activeTask.kind === 'follow'` and continuously updates the pathfinder goal
-9. ClaudeBot physically walks toward you; Claude calls `send_chat("Following az9713")` to confirm
+9. ClaudeBot physically walks toward you; Claude calls `send_chat("Following YourUsername")` to confirm
 10. The runner releases the lockfile; dashboard updates in real time via SSE
 
 ## What this is not

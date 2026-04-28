@@ -61,7 +61,7 @@ hello everyone           ✗ ignored
 
 ```
 You:        @claude follow me
-ClaudeBot:  Following az9713
+ClaudeBot:  Following YourUsername
 
 [you fly to a forest]
 

@@ -2,6 +2,8 @@
 
 Everything you need to bring the system back up after a reboot. Follow the steps in order — skipping any step causes problems.
 
+> **Before running any commands:** open a Git Bash terminal and `cd` into the project root (the folder containing `bot/`, `agent/`, and `server/`). All paths below are relative to that root.
+
 ---
 
 ## Before you start: kill any leftover processes
@@ -20,7 +22,7 @@ This prevents the "You logged in from another location" loop that happens when a
 ## Step 1 — Terminal 1: Start the Minecraft server
 
 ```bash
-cd ~/Downloads/minecraft_headless_agent_allaboutai/server
+cd server
 bash start.sh
 ```
 
@@ -36,7 +38,7 @@ Takes 15–60 seconds. Do not proceed until you see it.
 ## Step 2 — Terminal 2: Start the bot
 
 ```bash
-cd ~/Downloads/minecraft_headless_agent_allaboutai/bot
+cd bot
 node index.js
 ```
 
@@ -53,7 +55,7 @@ Also check the next line says `Gamemode: survival` — not `Gamemode: creative`.
 ## Step 3 — Terminal 3: Start the agent runner
 
 ```bash
-cd ~/Downloads/minecraft_headless_agent_allaboutai/agent
+cd agent
 bash run.sh
 ```
 
@@ -79,7 +81,7 @@ You should see ClaudeBot's position and health updating live.
 
 - Open Minecraft Java Edition 1.21.11
 - Multiplayer → **ClaudeBot** server → join
-- Your username is `az9713`
+- Your username is your Minecraft username
 - After joining, run these commands once to set up the session:
 
 ```

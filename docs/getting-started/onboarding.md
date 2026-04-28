@@ -58,7 +58,7 @@ Claude never directly touches Mineflayer. It only knows about the 11 MCP tools.
 
 This is the most surprising design choice. When Claude calls `follow_player`, Claude's job is done — it exits. But ClaudeBot keeps following you. How?
 
-The `activeTask` state lives in the bot process, not in Claude. The 500ms tick loop in `bot/index.js` continuously reads `activeTask` and updates the pathfinder goal. When Claude sets `activeTask = { kind: 'follow', playerName: 'az9713' }` and exits, the tick loop keeps running — it doesn't care that Claude is gone.
+The `activeTask` state lives in the bot process, not in Claude. The 500ms tick loop in `bot/index.js` continuously reads `activeTask` and updates the pathfinder goal. When Claude sets `activeTask = { kind: 'follow', playerName: 'YourUsername' }` and exits, the tick loop keeps running — it doesn't care that Claude is gone.
 
 This means:
 - Claude is stateless (exits after each command)

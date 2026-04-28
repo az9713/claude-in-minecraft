@@ -20,7 +20,7 @@ Returns ClaudeBot's current position, vitals, active task, and nearby players. C
   "health": 20,
   "food": 20,
   "activeTask": "idle",
-  "nearbyPlayers": [{ "name": "az9713", "distance": 4 }]
+  "nearbyPlayers": [{ "name": "YourUsername", "distance": 4 }]
 }
 ```
 
@@ -148,7 +148,7 @@ Lists entities (players, mobs, animals) within a radius, sorted by distance.
 
 ```json
 [
-  { "name": "az9713", "type": "player", "distance": 4, "pos": { "x": -9, "y": 63, "z": -48 } },
+  { "name": "YourUsername", "type": "player", "distance": 4, "pos": { "x": -9, "y": 63, "z": -48 } },
   { "name": "Sheep", "type": "mob", "distance": 18, "pos": { "x": 5, "y": 64, "z": -60 } }
 ]
 ```

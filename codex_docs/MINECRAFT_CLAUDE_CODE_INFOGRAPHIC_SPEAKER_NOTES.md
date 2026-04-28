@@ -58,7 +58,7 @@ Point to: `3. Chat Queue`
 
 Example:
 
-"If the player types `@claude follow me`, the bot appends a line like `az9713: @claude follow me` to the queue."
+"If the player types `@claude follow me`, the bot appends a line like `YourUsername: @claude follow me` to the queue."
 
 Key clarification:
 

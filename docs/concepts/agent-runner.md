@@ -61,7 +61,7 @@ If `claude -p` crashes mid-invocation without cleaning up, the lockfile remains.
 
 Every invocation is logged to `agent/agent.log`:
 ```
-2026-04-27 15:23:21 | INPUT: az9713: @claude follow me
+2026-04-27 15:23:21 | INPUT: YourUsername: @claude follow me
 2026-04-27 15:23:41 | OUTPUT: I'm now following you!
 ```
 
