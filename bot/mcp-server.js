@@ -7,6 +7,8 @@ import { registerChatTools } from './tools/chat.js';
 import { registerNavigationTools } from './tools/navigation.js';
 import { registerWorldTools } from './tools/world.js';
 import { registerInventoryTools } from './tools/inventory.js';
+import { registerCombatTools } from './tools/combat.js';
+import { registerWaypointTools } from './tools/waypoints.js';
 
 const MCP_PORT = 8888;
 
@@ -17,6 +19,8 @@ function createMcpServer(state) {
   registerNavigationTools(server, state);
   registerWorldTools(server, state);
   registerInventoryTools(server, state);
+  registerCombatTools(server, state);
+  registerWaypointTools(server, state);
   return server;
 }
 

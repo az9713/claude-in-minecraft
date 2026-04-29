@@ -98,6 +98,8 @@ function createBot() {
       executeMineTask(bot, task, state);
     } else if (task.kind === 'collect') {
       executeCollectTask(bot, task, state);
+    } else if (task.kind === 'attack') {
+      executeAttackTask(bot, task, state);
     }
   }, 500);
 
@@ -139,6 +141,45 @@ async function executeMineTask(bot, task, state) {
     console.log(`[Mine] ${task.blockName} ${task.mined}/${task.count}, inventory: ${bot.inventory.items().map(i => i.name + 'x' + i.count).join(', ') || 'empty'}`);
   } catch (err) {
     console.error('[Mine] Error:', err.message);
+  } finally {
+    task.busy = false;
+  }
+}
+
+async function executeAttackTask(bot, task, state) {
+  if (task.busy) return;
+
+  const pos = bot.entity.position;
+  // Prefer tracked entity by id; re-scan if it's gone
+  let target = task.targetId ? bot.entities[task.targetId] : null;
+
+  if (!target) {
+    target = Object.values(bot.entities).find(e => {
+      if (e === bot.entity) return false;
+      if (e.position.distanceTo(pos) > (task.range ?? 20)) return false;
+      const name = (e.username || e.displayName?.toString() || e.name || '').toLowerCase();
+      return name.includes(task.targetName.toLowerCase());
+    });
+  }
+
+  if (!target) {
+    bot.chat(`${task.targetName} defeated!`);
+    state.activeTask = { kind: 'idle' };
+    return;
+  }
+
+  task.targetId = target.id;
+  task.busy = true;
+  try {
+    const dist = target.position.distanceTo(pos);
+    if (dist > 3) {
+      bot.pathfinder.setGoal(new GoalFollow(target, 2), true);
+    } else {
+      bot.pathfinder.setGoal(null);
+      bot.attack(target);
+    }
+  } catch (err) {
+    console.error('[Attack] Error:', err.message);
   } finally {
     task.busy = false;
   }

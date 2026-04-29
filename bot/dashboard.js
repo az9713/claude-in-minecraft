@@ -1,11 +1,12 @@
 import express from 'express';
-import { appendFileSync } from 'fs';
+import { appendFileSync, existsSync, readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import EventEmitter from 'events';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CHAT_QUEUE = join(__dirname, 'chat-queue.txt');
+const WAYPOINTS_FILE = join(__dirname, 'waypoints.json');
 const DASHBOARD_PORT = 8889;
 
 export const dashboardEmitter = new EventEmitter();
@@ -54,6 +55,18 @@ export function startDashboard(state) {
 
   // REST status
   app.get('/api/status', (_req, res) => res.json(getStatus(state)));
+
+  // Waypoints — read-only from dashboard
+  app.get('/api/waypoints', (_req, res) => {
+    try {
+      const wps = existsSync(WAYPOINTS_FILE)
+        ? JSON.parse(readFileSync(WAYPOINTS_FILE, 'utf8'))
+        : {};
+      res.json(wps);
+    } catch {
+      res.json({});
+    }
+  });
 
   // Send command — writes to chat queue just like in-game chat
   app.post('/api/command', (req, res) => {

@@ -102,6 +102,20 @@
   .task-badge.mine     { background: #3d2b1f; color: #f6ad55; }
   .task-badge.follow   { background: #1f3d2b; color: #68d391; }
   .task-badge.collect  { background: #3d2b3d; color: #d6bcfa; }
+  .task-badge.attack   { background: #4a1f1f; color: #fc8181; }
+
+  .wp-list { display: flex; flex-direction: column; gap: 4px; }
+  .wp-item {
+    background: #2d3748;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .wp-name { font-weight: 600; color: #a78bfa; }
+  .wp-coords { color: #718096; font-variant-numeric: tabular-nums; font-size: 0.75rem; }
 
   .players-list { display: flex; flex-direction: column; gap: 6px; }
   .player-chip {
@@ -267,6 +281,13 @@
       </div>
     </div>
 
+    <div class="card">
+      <h2>Waypoints</h2>
+      <div class="wp-list" id="wp-list">
+        <span class="no-players">No waypoints saved</span>
+      </div>
+    </div>
+
   </div>
 
   <!-- RIGHT: chat -->
@@ -355,6 +376,24 @@
       ).join('');
     }
   }
+
+  // Fetch and render waypoints (polled every 5s)
+  async function refreshWaypoints() {
+    try {
+      const wps = await fetch('/api/waypoints').then(r => r.json());
+      const el = document.getElementById('wp-list');
+      const entries = Object.entries(wps);
+      if (entries.length === 0) {
+        el.innerHTML = '<span class="no-players">No waypoints saved</span>';
+      } else {
+        el.innerHTML = entries.map(([n, p]) =>
+          `<div class="wp-item"><span class="wp-name">${escHtml(n)}</span><span class="wp-coords">${p.x} ${p.y} ${p.z}</span></div>`
+        ).join('');
+      }
+    } catch { /* dashboard unavailable */ }
+  }
+  refreshWaypoints();
+  setInterval(refreshWaypoints, 5000);
 
   // SSE connection
   function connect() {

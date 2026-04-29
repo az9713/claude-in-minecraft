@@ -4,6 +4,7 @@ bot/node_modules/
 # Runtime files
 bot/chat-queue.txt
 bot/bot.log
+bot/waypoints.json
 agent/agent.log
 agent/agent-runner.log
 agent/claude-busy.lock
