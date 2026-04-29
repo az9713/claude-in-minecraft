@@ -29,11 +29,17 @@ export function registerWaypointTools(server, state) {
       const bot = state.bot;
       if (!bot) return text('Bot not connected');
       const pos = bot.entity.position;
+      const x = Math.round(pos.x);
+      const y = Math.round(pos.y);
+      const z = Math.round(pos.z);
+      if (!Number.isFinite(x) || !Number.isFinite(z)) {
+        return text('Cannot save waypoint — position not loaded yet. Move a few blocks and try again.');
+      }
       const wps = load();
       const key = name.toLowerCase();
-      wps[key] = { x: Math.round(pos.x), y: Math.round(pos.y), z: Math.round(pos.z) };
+      wps[key] = { x, y, z };
       save(wps);
-      return text(`Saved "${key}" at ${wps[key].x} ${wps[key].y} ${wps[key].z}`);
+      return text(`Saved "${key}" at ${x} ${y} ${z}`);
     }
   );
 
