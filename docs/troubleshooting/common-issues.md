@@ -170,6 +170,67 @@ rm agent/claude-busy.lock
 
 ---
 
+## `craft_item` says "No recipe available" but you have the materials
+
+**Cause:** The recipe system checks exact ingredient availability. If you have oak logs but asked for `oak_planks` without first converting the logs, or vice versa, the check may fail due to a mismatch between what the recipe expects and what's in inventory. More commonly, the item name is wrong.
+
+**Verify:**
+```bash
+# Check what's actually in inventory
+# In game: @claude what is in your inventory
+# Then confirm the exact item ID needed — check the Minecraft wiki for registry names
+```
+
+**Fix:** Use exact Minecraft registry IDs (snake_case). `wooden_pickaxe` not `"Wooden Pickaxe"`. `oak_planks` not `"Oak Planks"`. If you need the planks first, craft them: `@claude craft oak_planks`.
+
+---
+
+## `place_block` reports "no adjacent solid block"
+
+**Cause:** All six positions adjacent to the target coordinate are air. `place_block` requires at least one neighboring solid block to place against.
+
+**Fix:** Choose a coordinate adjacent to an existing surface. If you want to build a column, place the first block at ground level (Y = surface), then place the next one on top of it (Y + 1), and so on. You cannot place blocks floating in mid-air in a single call.
+
+---
+
+## Combat stops immediately: "No zombie found within 20 blocks"
+
+**Cause 1:** The entity name doesn't match. Mineflayer reports mob names using their internal type string (e.g., `Zombie`, `Skeleton`, `Creeper`). Your search string must be a substring of that name.
+
+**Cause 2:** The mob is in an unloaded chunk, or is further than 20 blocks away.
+
+**Verify:**
+```
+@claude what do you see around you
+```
+
+The response lists all nearby entities with their names as mineflayer sees them. Use those exact names.
+
+**Fix:** Use the name exactly as shown in `get_nearby_entities`. Try `@claude attack zombie` (lowercase partial match works). Increase range if needed: the tool defaults to 20 blocks.
+
+---
+
+## `eat_food` says "No food items in inventory"
+
+**Cause:** The bot's inventory contains nothing from the known food priority list. Custom server items or items with non-standard names are not recognized.
+
+**Fix:** Specify the item name explicitly. If your server has an item called `magic_bread`, use: `@claude eat magic_bread`. If you want the auto-priority list to include it, add it to `FOOD_PRIORITY` in `bot/tools/inventory.js`.
+
+---
+
+## Waypoint goes to wrong location after bot restart
+
+**Cause:** `bot/waypoints.json` stores rounded integer coordinates. If the bot was mid-air or at an unusual Y when the waypoint was saved, the stored Y might be off by 1 from where you intended.
+
+**Fix:** Delete and re-save the waypoint with the bot standing at exactly the right position:
+
+```
+@claude delete waypoint base
+@claude save waypoint base
+```
+
+---
+
 ## Smoke test fails: "FAIL — no reply from ClaudeBot within 45000ms"
 
 **Cause:** One or more components are not running, or Claude took longer than 45 seconds.

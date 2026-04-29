@@ -4,7 +4,7 @@ Definitions for every term used across the docs.
 
 ---
 
-**activeTask** — A shared state object (`{ kind, ...params }`) held by `bot/index.js` that describes what ClaudeBot is currently doing. The 500ms tick loop reads this and drives ongoing behaviour (pathfinding, mining). MCP tool handlers write to it. Persists across `claude -p` invocations because the bot process is long-lived. Values: `idle`, `navigate`, `follow`, `mine`, `collect`.
+**activeTask** — A shared state object (`{ kind, ...params }`) held by `bot/index.js` that describes what ClaudeBot is currently doing. The 500ms tick loop reads this and drives ongoing behaviour (pathfinding, mining, combat). MCP tool handlers write to it. Persists across `claude -p` invocations because the bot process is long-lived. Values: `idle`, `navigate`, `follow`, `mine`, `collect`, `attack`.
 
 **Agent runner** — The bash script `agent/run.sh` that polls `chat-queue.txt` every 500ms and invokes `claude -p` when content is found. Owned by Terminal 3. One invocation per message; a lockfile prevents concurrency.
 
@@ -40,4 +40,8 @@ Definitions for every term used across the docs.
 
 **Streamable HTTP transport** — The MCP transport used by this project. Claude's MCP client sends `POST /mcp` requests; the server responds with JSON or SSE. Requires `{ "type": "http", "url": "..." }` in `mcp-config.json`. The older SSE-only transport is deprecated and will not work.
 
-**Tick loop** — A `setInterval` callback in `bot/index.js` that fires every 500ms while the bot is connected. Executes the current `activeTask`: updates pathfinder goals for `follow`, calls `executeMineTask` for `mine`, and `executeCollectTask` for `collect`.
+**Tick loop** — A `setInterval` callback in `bot/index.js` that fires every 500ms while the bot is connected. Executes the current `activeTask`: updates pathfinder goals for `follow`, calls `executeMineTask` for `mine`, `executeCollectTask` for `collect`, and `executeAttackTask` for `attack`.
+
+**Waypoint** — A named geographic position saved to `bot/waypoints.json`. Created with `save_waypoint`, navigated to with `goto_waypoint`. Waypoints persist across bot and agent restarts and are displayed in the dashboard's Waypoints panel.
+
+**FOOD_PRIORITY** — An ordered list of Minecraft food item names used by `eat_food` when no specific food is requested. Items are ordered by effective quality (foodPoints + saturation), from best (enchanted golden apple, golden carrot) to worst (rotten flesh, spider eye).

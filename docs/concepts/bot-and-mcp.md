@@ -39,6 +39,8 @@ Runs every 500ms while the bot is connected. Reads `state.activeTask` and execut
 | `follow` | Updates `pathfinder.setGoal(new GoalFollow(targetEntity, range))` dynamically |
 | `mine` | Calls `executeMineTask` — navigates within 1 block, digs, waits 1.5s for item pickup |
 | `collect` | Calls `executeCollectTask` — navigates to nearest dropped item entity |
+| `attack` | Calls `executeAttackTask` — chases and attacks target entity; declares victory when entity is gone |
+| `navigate` | Set by `navigate_to`, `goto_waypoint`; pathfinder handles movement; tick loop does not act on it |
 
 The `busy` flag on active tasks prevents re-entrant execution while an async operation is in flight.
 
@@ -66,15 +68,17 @@ Multiple sessions can coexist (e.g., smoke test running while a real command is 
 
 ## Tool registration
 
-Tools are registered in five files under `bot/tools/`:
+Tools are registered in seven files under `bot/tools/`:
 
 | File | Tools registered |
 |---|---|
 | `tools/status.js` | `get_status` |
 | `tools/chat.js` | `send_chat` |
 | `tools/navigation.js` | `navigate_to`, `follow_player`, `stop_action`, `rejoin_server` |
-| `tools/world.js` | `mine_block`, `get_nearby_blocks`, `get_nearby_entities` |
-| `tools/inventory.js` | `get_inventory`, `collect_nearby_items` |
+| `tools/world.js` | `mine_block`, `get_nearby_blocks`, `get_nearby_entities`, `craft_item`, `place_block` |
+| `tools/inventory.js` | `get_inventory`, `collect_nearby_items`, `eat_food`, `drop_item` |
+| `tools/combat.js` | `attack_entity` |
+| `tools/waypoints.js` | `save_waypoint`, `goto_waypoint`, `list_waypoints`, `delete_waypoint` |
 
 Each tool uses Zod for input validation and returns `{ content: [{ type: 'text', text: '...' }] }`.
 
@@ -85,12 +89,13 @@ Each tool uses Zod for input validation and returns `{ content: [{ type: 'text',
 state = {
   bot: null | MineflayerBot,   // null when disconnected
   activeTask: {
-    kind: 'idle' | 'navigate' | 'follow' | 'mine' | 'collect',
+    kind: 'idle' | 'navigate' | 'follow' | 'mine' | 'collect' | 'attack',
     // kind-specific fields:
-    // follow: { playerName, range }
-    // mine: { blockName, count, range, mined, busy }
-    // navigate: { x, y, z }
+    // follow:  { playerName, range }
+    // mine:    { blockName, count, range, mined, busy }
+    // navigate:{ x, y, z }
     // collect: { itemName, range, busy }
+    // attack:  { targetName, range, targetId, busy }
   }
 }
 ```
