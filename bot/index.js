@@ -82,32 +82,41 @@ function createBot() {
     appendFileSync(CHAT_QUEUE, entry, 'utf8');
   });
 
-  // Co-mine inference: trigger when player mines 2+ of same block type within 10s
+  // Co-mine inference: detect when a player breaks blocks (works in both survival and creative)
   const playerMineTracker = {};
-  bot.on('blockBreakProgressObserved', (block, destroyStage, entity) => {
-    if (!entity?.username || entity.username === BOT_NAME) return;
-    const username = entity.username;
+  bot.on('blockUpdate', (oldBlock, newBlock) => {
+    if (!oldBlock || newBlock.type !== 0) return; // only care about blocks becoming air
+    if (oldBlock.name === 'air') return;
     const now = Date.now();
-    const posKey = `${block.position.x},${block.position.y},${block.position.z}`;
+    const pos = oldBlock.position;
+
+    // Find the closest player within 6 blocks of the broken block
+    const nearby = Object.values(bot.players).find(p => {
+      if (!p.entity || p.username === BOT_NAME) return false;
+      return p.entity.position.distanceTo(pos) < 6;
+    });
+    if (!nearby) return;
+
+    const username = nearby.username;
+    const posKey = `${pos.x},${pos.y},${pos.z}`;
 
     let tracker = playerMineTracker[username];
-    if (!tracker || tracker.blockName !== block.name || now - tracker.firstTime > 10000) {
-      tracker = { seenBlocks: new Set([posKey]), blockName: block.name, firstTime: now };
+    if (!tracker || tracker.blockName !== oldBlock.name || now - tracker.firstTime > 10000) {
+      tracker = { seenBlocks: new Set([posKey]), blockName: oldBlock.name, firstTime: now };
       playerMineTracker[username] = tracker;
     } else {
       tracker.seenBlocks.add(posKey);
     }
 
-    // Keep co-mine alive while player is actively mining
     if (state.activeTask.kind === 'comine' && state.activeTask.playerName === username) {
       state.activeTask.lastPlayerMine = now;
     }
 
     const canStart = state.activeTask.kind === 'idle' || state.activeTask.kind === 'follow';
     if (tracker.seenBlocks.size >= 2 && canStart) {
-      state.activeTask = { kind: 'comine', blockType: block.name, playerName: username, lastPlayerMine: now };
-      bot.chat(`Co-mining ${block.name} with you!`);
-      playerMineTracker[username] = { seenBlocks: new Set(), blockName: block.name, firstTime: now };
+      state.activeTask = { kind: 'comine', blockType: oldBlock.name, playerName: username, lastPlayerMine: now };
+      bot.chat(`Co-mining ${oldBlock.name} with you!`);
+      playerMineTracker[username] = { seenBlocks: new Set(), blockName: oldBlock.name, firstTime: now };
     }
   });
 
@@ -189,6 +198,7 @@ function createBot() {
 function executeGuardianTick(bot, state) {
   if (!state.guardEnabled) return;
   if (state.activeTask.kind === 'attack') return;
+  if (state.activeTask.kind === 'comine') return; // don't interrupt co-mining
 
   const players = Object.values(bot.players).filter(p => p.entity && p.username !== BOT_NAME);
   if (players.length === 0) return;
