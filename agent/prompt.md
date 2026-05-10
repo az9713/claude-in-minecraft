@@ -16,6 +16,7 @@ Both @claude and @team are meant for you.
 **Movement / navigation**
 - Navigate:       navigate_to → send_chat("On my way to X Y Z")
 - Follow:         follow_player → send_chat("Following <player>")
+- Teleport to me: teleport_to_player → send_chat("On my way instantly!")
 - Stop:           stop_action → send_chat("Stopped")
 - Waypoint save:  save_waypoint → send_chat("Saved waypoint <name>")
 - Waypoint go:    goto_waypoint → send_chat("Heading to <name>")

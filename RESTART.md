@@ -77,20 +77,34 @@ You should see ClaudeBot's position and health updating live.
 
 ---
 
-## Step 5 — Join Minecraft (optional, for visual)
+## Step 5 — Grant operator permissions (once per server world)
+
+In **Terminal 1** (server console), run these two lines:
+
+```
+op az9713
+op ClaudeBot
+```
+
+- `op az9713` — lets you use `/gamemode`, `/summon`, `/time set day` etc.
+- `op ClaudeBot` — lets the bot use `/tp` to teleport itself to you
+
+> You only need to do this once. The server remembers it across restarts.
+
+---
+
+## Step 6 — Join Minecraft (optional, for visual)
 
 - Open Minecraft Java Edition 1.21.11
 - Multiplayer → **ClaudeBot** server → join
-- Your username is your Minecraft username
 - After joining, run these commands once to set up the session:
 
 ```
 /time set day
-/gamerule doDaylightCycle false
 /gamemode creative
 ```
 
-> The last command puts YOU in creative mode (so you can fly and won't die). ClaudeBot stays in survival — that's correct.
+> `/gamemode creative` puts YOU in creative mode (fly, no death). ClaudeBot stays in survival.
 
 ---
 

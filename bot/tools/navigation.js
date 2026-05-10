@@ -42,6 +42,24 @@ export function registerNavigationTools(server, state) {
   );
 
   server.tool(
+    'teleport_to_player',
+    'Instantly teleport the bot directly next to a player — no pathfinding, no delay',
+    {
+      playerName: z.string().describe('Exact in-game username to teleport to'),
+    },
+    async ({ playerName }) => {
+      const bot = state.bot;
+      if (!bot) return text('Bot not connected');
+      const player = bot.players[playerName];
+      if (!player?.entity) return text(`Player ${playerName} not found. Are they in the same world?`);
+      const pos = player.entity.position;
+      await bot.chat(`/tp ClaudeBot ${Math.round(pos.x) + 1} ${Math.round(pos.y)} ${Math.round(pos.z)}`);
+      state.activeTask = { kind: 'idle' };
+      return text(`Teleported to ${playerName}`);
+    }
+  );
+
+  server.tool(
     'stop_action',
     'Stop all current movement and tasks, return to idle',
     {},
