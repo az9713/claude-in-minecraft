@@ -107,16 +107,23 @@ export function registerInventoryTools(server, state) {
 
   server.tool(
     'set_storage',
-    'Save current position as the designated storage chest waypoint for supply-runner deposits',
+    'Register the nearest chest as the storage waypoint for supply-runner deposits',
     {},
     async () => {
       const bot = state.bot;
       if (!bot) return text('Bot not connected');
-      const pos = bot.entity.position;
-      const x = Math.round(pos.x), y = Math.round(pos.y), z = Math.round(pos.z);
-      if (!Number.isFinite(x) || !Number.isFinite(z)) return text('Position not loaded yet');
+
+      // Find the nearest chest within 6 blocks and save ITS coordinates
+      const chestBlock = bot.findBlock({
+        matching: (block) => block.name.includes('chest'),
+        maxDistance: 6,
+      });
+
+      if (!chestBlock) return text('No chest found within 6 blocks. Place a chest nearby first.');
+
+      const { x, y, z } = chestBlock.position;
       state.storagePos = { x, y, z };
-      return text(`Storage set at ${x} ${y} ${z}. Auto-collect is now active within 8 blocks.`);
+      return text(`Storage registered at chest ${x} ${y} ${z}. Auto-collect active.`);
     }
   );
 
@@ -140,12 +147,12 @@ export function registerInventoryTools(server, state) {
         }
       }
 
-      // Find a chest near storage — bot is already close, search 3 blocks from current position
+      // Navigate to within 2 blocks of the saved chest coordinates, then open it
       const chestBlock = bot.findBlock({
         matching: (block) => block.name.includes('chest'),
-        maxDistance: 3,
+        maxDistance: 5,
       });
-      if (!chestBlock) return text('No chest found within 3 blocks. Place a chest next to where you ran set_storage.');
+      if (!chestBlock) return text('No chest found. Run set_storage near a chest first.');
 
       try {
         const chest = await bot.openChest(chestBlock);
