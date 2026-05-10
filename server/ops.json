@@ -4,5 +4,11 @@
     "name": "az9713",
     "level": 4,
     "bypassesPlayerLimit": false
+  },
+  {
+    "uuid": "313c66c6-e732-3e25-9fbc-ee84b2e331bc",
+    "name": "ClaudeBot",
+    "level": 4,
+    "bypassesPlayerLimit": false
   }
 ]
