@@ -6,6 +6,23 @@ const { GoalNear } = goals;
 
 export function registerWorldTools(server, state) {
   server.tool(
+    'co_mine',
+    'Start co-mining a block type alongside the player — bot finds and mines the same block type near the player',
+    {
+      blockName: z.string().describe('Block type to co-mine, e.g. "stone", "oak_log", "coal_ore"'),
+      playerName: z.string().describe('Username of the player to mine alongside'),
+    },
+    async ({ blockName, playerName }) => {
+      const bot = state.bot;
+      if (!bot) return text('Bot not connected');
+      const player = bot.players[playerName];
+      if (!player?.entity) return text(`Player "${playerName}" not found nearby`);
+      state.activeTask = { kind: 'comine', blockType: blockName, playerName, lastPlayerMine: Date.now() };
+      return text(`Co-mining ${blockName} with ${playerName}`);
+    }
+  );
+
+  server.tool(
     'mine_block',
     'Find the nearest block of a given type and mine it (count times). Returns immediately; mining continues in background.',
     {

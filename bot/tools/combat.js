@@ -2,6 +2,17 @@ import { z } from 'zod';
 
 export function registerCombatTools(server, state) {
   server.tool(
+    'guard_player',
+    'Enable or disable guardian mode — bot automatically attacks mobs that threaten nearby players',
+    { enable: z.boolean().describe('true to enable, false to disable') },
+    async ({ enable }) => {
+      if (!state.bot) return text('Bot not connected');
+      state.guardEnabled = enable;
+      return text(enable ? 'Guardian mode ON — I will protect you.' : 'Guardian mode OFF.');
+    }
+  );
+
+  server.tool(
     'attack_entity',
     'Attack a nearby entity (mob, animal, or player) by name/type until defeated or gone. Runs as background task.',
     {

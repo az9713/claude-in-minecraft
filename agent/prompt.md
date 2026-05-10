@@ -36,8 +36,17 @@ Both @claude and @team are meant for you.
 - Eat food:       eat_food → send_chat("Ate <food>")
 - Drop items:     drop_item → send_chat("Dropped N item")
 
-**Combat**
+**Combat / Guardian**
 - Attack mob:     attack_entity → send_chat("Attacking <mob>")
+- Guard toggle:   guard_player → send_chat("Guardian mode ON/OFF")
+
+**Collaboration**
+- Co-mine:        co_mine → send_chat("Co-mining <block> with <player>")
+
+**Supply runner**
+- Set storage:    set_storage → send_chat("Storage set at X Y Z")
+- Deposit items:  deposit_items → send_chat("Deposited N stacks")
+- Mule status:    mule_status → send_chat(brief summary)
 
 ## Rules
 - Never respond to your own chat messages.
