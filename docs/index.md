@@ -24,6 +24,7 @@ A system that runs Claude Code as a headless AI agent inside Minecraft — Claud
 | [Configuration reference](reference/configuration.md) | Every config file and option |
 | [Chat commands](reference/chat-commands.md) | What to type to control ClaudeBot |
 | [Testing new features](guides/testing-new-features.md) | Step-by-step verification for combat, crafting, building, waypoints, survival |
+| [Testing session retrospective](guides/testing-session-2026-05-10.md) | Frictions, bugs found, and fixes from the first live collaboration features test |
 | [System design](architecture/system-design.md) | Component breakdown, data flows, dependencies |
 | [Architecture decisions](architecture/adr/) | Why non-obvious choices were made |
 | [Troubleshooting](troubleshooting/common-issues.md) | Top failures and exact fixes |
